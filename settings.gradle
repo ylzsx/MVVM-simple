@@ -1,0 +1,68 @@
+include ':app', ':base', ':module-login', ':fw-arouter', ':fw-annotations', ':fw-annotations-compiler', ':event'
+
+rootProject.name='MVVM-simple'
+
+// For Dependencies
+
+def deps = [:]
+
+def android = [
+        material    : 'com.google.android.material:material:1.0.0'
+]
+
+def androidx = [
+        appcompat       : 'androidx.appcompat:appcompat:1.1.0',
+        constraintlayout: 'androidx.constraintlayout:constraintlayout:1.1.3'
+]
+
+def tools = [
+        loadsir : 'com.kingja.loadsir:loadsir:1.3.6'
+]
+
+def project = [
+        // 业务层
+        module  : [
+                login   : includeProject(":module-login")
+        ],
+
+        // 组件层
+        lib     : [
+
+        ],
+
+        // 基础层
+        base    : [
+                base    : includeProject(":base")
+        ],
+
+        // 架构层
+        framework   : [
+                arouter         : includeProject(":fw-arouter"),
+                annotations     : includeProject(":fw-annotations"),
+                annotations_compiler : includeProject(":fw-annotations-compiler")
+        ]
+]
+
+def processor = [
+        annotation_auto_service_apt : 'com.google.auto.service:auto-service:1.0-rc4'
+]
+
+def debug = [
+        junit           : 'junit:junit:4.12',
+        androidx_junit  : 'androidx.test.ext:junit:1.1.1',
+        espresso        : 'androidx.test.espresso:espresso-core:3.2.0'
+]
+
+deps.android = android
+deps.androidx = androidx
+deps.tools = tools
+deps.project = project
+deps.processor = processor
+deps.debug = debug
+
+def includeProject(def projectPath) {
+    include projectPath
+    return project(projectPath)
+}
+
+gradle.ext.deps = deps
