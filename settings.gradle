@@ -1,4 +1,4 @@
-include ':app', ':base', ':module-login', ':fw-arouter', ':fw-annotations', ':fw-annotations-compiler', ':event'
+include ':app', ':base', ':module-login', ':fw-arouter', ':fw-annotations', ':fw-annotations-compiler', ':event', ':network'
 
 rootProject.name='MVVM-simple'
 

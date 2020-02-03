@@ -2,6 +2,7 @@ package com.example.login;
 
 import android.view.View;
 
+import com.example.base.activity.IBaseView;
 import com.example.base.model.BaseModel;
 import com.example.base.viewmodel.MvvmBaseViewModel;
 
@@ -19,7 +20,7 @@ public class LoginViewModel extends MvvmBaseViewModel<View> {
         loginModel.register(new BaseModel.IModelListener<String>() {
             @Override
             public void onLoadFinish(BaseModel model, String data) {
-                getPageView().setOnClickListener(view -> {});
+                // TODO：通过livedata操作界面数据，太菜还未封装
             }
 
             @Override
@@ -54,4 +55,7 @@ public class LoginViewModel extends MvvmBaseViewModel<View> {
         getCachedDataAndLoad(RegisterModel.tagName);
     }
 
+    interface ILoginVIew extends IBaseView {
+
+    }
 }

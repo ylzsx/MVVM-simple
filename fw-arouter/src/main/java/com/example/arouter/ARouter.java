@@ -107,7 +107,7 @@ public class ARouter {
         Class<? extends Activity> aClass = map.get(key);
         if (aClass != null) {
             Intent intent = new Intent(context, aClass);
-            if (bundle != null) {
+            if (bundle != null && key != null && !key.isEmpty()) {
                 intent.putExtras(bundle);
             }
             activity.startActivity(intent);

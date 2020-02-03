@@ -1,5 +1,6 @@
 package com.example.base.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -123,6 +124,22 @@ public abstract class MvvmActivity<V extends ViewDataBinding, VM extends IMvvmBa
     public void showContent() {
         if (mLoadService != null) {
             mLoadService.showSuccess();
+        }
+    }
+
+    public void startActivity(Class<?> clazz) {
+        startActivity(clazz, null, null);
+    }
+
+    public void startActivity(Class<?> clazz,String key, Bundle bundle) {
+        if (clazz != null) {
+            Intent intent = new Intent(this, clazz);
+            if (bundle != null && key != null && !key.isEmpty()) {
+                intent.putExtra(key, bundle);
+            }
+            startActivity(intent);
+        } else {
+            throw new NullPointerException();
         }
     }
 }
