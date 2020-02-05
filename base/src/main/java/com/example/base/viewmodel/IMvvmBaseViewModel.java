@@ -9,5 +9,5 @@ package com.example.base.viewmodel;
 
 public interface IMvvmBaseViewModel {
 
-    void showDialog(String content);
+//    void showDialog(String content);
 }

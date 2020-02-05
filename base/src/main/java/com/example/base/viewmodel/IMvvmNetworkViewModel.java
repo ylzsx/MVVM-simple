@@ -1,5 +1,9 @@
 package com.example.base.viewmodel;
 
+import com.example.base.model.SuperBaseModel;
+
+import java.util.Map;
+
 /**
  * @author YangZhaoxin.
  * @since 2020/1/26 16:38.
@@ -14,5 +18,7 @@ public interface IMvvmNetworkViewModel extends IMvvmBaseViewModel {
 //
 //    boolean isUIAttached();
 //
-    void detachModel();
+    void detachModels();
+
+    Map<String, SuperBaseModel> getModels();
 }

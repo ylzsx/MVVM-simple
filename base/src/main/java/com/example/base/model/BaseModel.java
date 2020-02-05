@@ -1,5 +1,7 @@
 package com.example.base.model;
 
+import com.example.base.network.NetWorkStatus;
+
 /**
  * 不分页数据
  * @author YangZhaoxin.
@@ -24,6 +26,12 @@ public abstract class BaseModel<T> extends SuperBaseModel<T> {
                 @Override
                 public void run() {
                     mModelLiveData.postValue(data);
+                    BaseNetworkStatus status = mNetworkStatus.getValue();
+                    if (status == null) {
+                        status = new BaseNetworkStatus();
+                    }
+                    status.setStatus(NetWorkStatus.DONE);
+                    mNetworkStatus.postValue(status);
                     // 如果需要缓存数据，加载成功后保存
                     // TODO: 缓存room
                     if (getCachedPreferenceKey() != null) {

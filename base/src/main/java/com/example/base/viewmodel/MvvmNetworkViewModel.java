@@ -29,7 +29,7 @@ public abstract class MvvmNetworkViewModel extends MvvmBaseViewModel implements 
     }
 
     @Override
-    public void detachModel() {
+    public void detachModels() {
         unBindModel();
     }
 
@@ -81,15 +81,8 @@ public abstract class MvvmNetworkViewModel extends MvvmBaseViewModel implements 
         }
     }
 
-//    public MutableLiveData getNetworkStatusLiveData(String key) {
-//        if (mModelMap == null) {
-//            return null;
-//        }
-//        SuperBaseModel model;
-//        if ((model = mModelMap.get(key)) != null) {
-//            return model.getNetworkStatus();
-//        } else {
-//            throw new IllegalArgumentException("无该key: " + key + "对应的model");
-//        }
-//    }
+    @Override
+    public Map<String, SuperBaseModel> getModels() {
+        return mModelMap;
+    }
 }

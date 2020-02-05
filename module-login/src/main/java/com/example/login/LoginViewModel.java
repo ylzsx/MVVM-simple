@@ -18,7 +18,6 @@ public class LoginViewModel extends MvvmNetworkViewModel {
         registerModel(RegisterModel.tagName, new RegisterModel());
     }
 
-
     public void login() {
         getCachedDataAndLoad(LoginModel.tagName);
     }

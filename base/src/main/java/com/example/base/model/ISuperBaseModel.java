@@ -1,7 +1,5 @@
 package com.example.base.model;
 
-import com.example.base.network.NetWorkStatus;
-
 import androidx.lifecycle.MutableLiveData;
 
 /**
@@ -13,7 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 
 public interface ISuperBaseModel {
 
-    MutableLiveData<NetWorkStatus> getNetworkStatus();
+    MutableLiveData<BaseNetworkStatus> getNetworkStatus();
 
-    void setNetworkStatus(NetWorkStatus netWorkStatus);
+    void setNetworkStatus(BaseNetworkStatus netWorkStatus);
 }

@@ -3,8 +3,6 @@ package com.example.base.model;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.example.base.network.NetWorkStatus;
-
 import java.lang.reflect.Type;
 
 import androidx.annotation.CallSuper;
@@ -27,13 +25,13 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     private BaseCachedData<T> mData;
     // TODO: 是否需要都用防倒灌的livedata
     protected MutableLiveData<T> mModelLiveData;
-    protected MutableLiveData<NetWorkStatus> mNetworkStatus;
+    protected MutableLiveData<BaseNetworkStatus> mNetworkStatus;
 
     public SuperBaseModel() {
         // TODO：是否可以自动释放liveData
         mModelLiveData = new MutableLiveData<>();
         mNetworkStatus = new MutableLiveData<>();
-        mNetworkStatus.setValue(NetWorkStatus.INIT);
+        mNetworkStatus.setValue(new BaseNetworkStatus());
         if (getCachedPreferenceKey() != null) {
             mData = new BaseCachedData<T>();
         }
@@ -41,12 +39,12 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     }
 
     @Override
-    public MutableLiveData<NetWorkStatus> getNetworkStatus() {
+    public MutableLiveData<BaseNetworkStatus> getNetworkStatus() {
         return mNetworkStatus;
     }
 
     @Override
-    public void setNetworkStatus(NetWorkStatus netWorkStatus) {
+    public void setNetworkStatus(BaseNetworkStatus netWorkStatus) {
         mNetworkStatus.postValue(netWorkStatus);
     }
 

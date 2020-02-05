@@ -1,10 +1,10 @@
 package com.example.login;
 
-import com.example.base.activity.MvvmNetworkActivity;
+import com.example.base.view.activity.MvvmNetworkActivity;
+import com.example.base.model.BaseNetworkStatus;
+import com.example.base.utils.ToastUtil;
 import com.example.fw_annotations.BindPath;
 import com.example.login.databinding.ActivityLoginBinding;
-
-import androidx.lifecycle.Observer;
 
 @BindPath("login/LoginActivity")
 public class LoginActivity extends MvvmNetworkActivity<ActivityLoginBinding, LoginViewModel> {
@@ -24,10 +24,6 @@ public class LoginActivity extends MvvmNetworkActivity<ActivityLoginBinding, Log
         return 0;
     }
 
-    @Override
-    protected void onRetryBtnClick() {
-
-    }
 
     @Override
     protected void initParameters() {
@@ -38,13 +34,12 @@ public class LoginActivity extends MvvmNetworkActivity<ActivityLoginBinding, Log
     protected void initDataAndView() {
         // 点击登录
         mViewModel.login();
-
-        mViewModel.getLoginLiveData().observe(this, new Observer() {
-            @Override
-            public void onChanged(Object o) {
-
-            }
-        });
     }
 
+    @Override
+    public void onNetDone(String key, BaseNetworkStatus status) {
+        if (LoginModel.tagName.equals(key)) {
+            ToastUtil.show(this, "登录成功");
+        }
+    }
 }

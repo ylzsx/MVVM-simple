@@ -20,8 +20,6 @@ public enum NetWorkStatus {
     // TODO: 异常种类可由network去做
     FAILED,
 
-    NO_RESPONSE,
-
     NO_NETWORK
 
 }

@@ -1,4 +1,4 @@
-package com.example.base.fragment;
+package com.example.base.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,15 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.base.R;
-import com.example.base.loadSir.EmptyCallback;
-import com.example.base.loadSir.ErrorCallback;
-import com.example.base.loadSir.LoadingCallback;
-import com.example.base.utils.ToastUtil;
-import com.example.base.viewmodel.IMvvmNetworkViewModel;
-import com.kingja.loadsir.callback.Callback;
-import com.kingja.loadsir.core.LoadService;
-import com.kingja.loadsir.core.LoadSir;
+import com.example.base.view.IBasePagingView;
+import com.example.base.viewmodel.IMvvmBaseViewModel;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -25,17 +18,17 @@ import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
 
 /**
- * @author YangZhaoxin.
- * @since 2020/1/26 16:16.
- * email yangzhaoxin@hrsoft.net.
+ * Time:2020/1/23 8:13
+ * Author: han1254
+ * Email: 1254763408@qq.com
+ * Function:
  */
 
-public abstract class MvvmFragment<V extends ViewDataBinding, VM extends IMvvmNetworkViewModel> extends Fragment
+public abstract class MvvmBaseFragment<V extends ViewDataBinding, VM extends IMvvmBaseViewModel> extends Fragment
         implements IBasePagingView {
 
     protected VM mViewModel;
     protected V mViewDataBinding;
-    private LoadService mLoadService;
 
     // 方便打印日志信息
     protected String mFragmentTag = "";
@@ -57,10 +50,6 @@ public abstract class MvvmFragment<V extends ViewDataBinding, VM extends IMvvmNe
 
     protected abstract void initDataAndView();
 
-    /**
-     * 网络失败重试方法
-     */
-    protected abstract void onRetryBtnClick();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,67 +67,25 @@ public abstract class MvvmFragment<V extends ViewDataBinding, VM extends IMvvmNe
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mViewModel = getViewModel();
-        if (mViewModel != null) {
-            mViewModel.attachUI(this);
-        }
+        initViewModel();
+        performDataBinding();
+        initDataAndView();
+    }
+
+    private void performDataBinding() {
         if (getBindingVariable() > 0) {
             mViewDataBinding.setVariable(getBindingVariable(), mViewModel);
         }
         mViewDataBinding.executePendingBindings();
-        initDataAndView();
     }
 
-    /**
-     * 网络失败时展示页面（空view，错误的view）
-     * @param view  网络失败后要替换的view
-     */
-    public void setLoadSir(View view) {
-        mLoadService = LoadSir.getDefault().register(view, new Callback.OnReloadListener() {
-            @Override
-            public void onReload(View v) {
-                onRetryBtnClick();
-            }
-        });
+    protected void initViewModel() {
+//        mViewModel = getViewModel();
+//        if (mViewModel != null) {
+//            mViewModel.attachUI(this);
+//        }
     }
 
-    @Override
-    public void onLoadMoreFailure(String message) {
-        ToastUtil.show(getContext(), message);
-    }
-
-    @Override
-    public void onLoadMoreEmpty() {
-        ToastUtil.show(getContext(), getString(R.string.no_more_data));
-    }
-
-    @Override
-    public void onRefreshEmpty(String message) {
-        if (mLoadService != null) {
-            mLoadService.showCallback(EmptyCallback.class);
-        }
-    }
-
-    @Override
-    public void onRefreshFailure(String message) {
-        if (mLoadService != null) {
-            mLoadService.showCallback(ErrorCallback.class);
-        }
-    }
-
-    @Override
-    public void showLoading() {
-        if (mLoadService != null) {
-            mLoadService.showCallback(LoadingCallback.class);
-        }
-    }
-
-    @Override
-    public void showContent() {
-        if (mLoadService != null) {
-            mLoadService.showSuccess();
-        }
-    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -155,9 +102,6 @@ public abstract class MvvmFragment<V extends ViewDataBinding, VM extends IMvvmNe
     @Override
     public void onDetach() {
         super.onDetach();
-        if (mViewModel != null && mViewModel.isUIAttached()) {
-            mViewModel.detachUI();
-        }
         Log.d(getFragmentTag(), this + ":" + "onDetach");
     }
 

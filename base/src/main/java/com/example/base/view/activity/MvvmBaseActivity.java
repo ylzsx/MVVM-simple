@@ -1,10 +1,9 @@
-package com.example.base.activity;
+package com.example.base.view.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.base.viewmodel.IMvvmBaseViewModel;
-import com.example.base.viewmodel.IMvvmNetworkViewModel;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
@@ -13,9 +12,10 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
 /**
- * @author YangZhaoxin.
- * @since 2020/2/4 22:48.
- * email yangzhaoxin@hrsoft.net.
+ * Time:2020/1/23 22:59
+ * Author: han1254
+ * Email: 1254763408@qq.com
+ * Function:
  */
 
 public abstract class MvvmBaseActivity<V extends ViewDataBinding, VM extends IMvvmBaseViewModel>

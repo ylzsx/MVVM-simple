@@ -1,6 +1,4 @@
-package com.example.base.fragment;
-
-import com.example.base.activity.IBaseView;
+package com.example.base.view;
 
 /**
  * @author YangZhaoxin.
