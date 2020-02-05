@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 /**
  * Time:2020/1/23 22:59
@@ -26,7 +28,7 @@ public abstract class MvvmBaseActivity<V extends ViewDataBinding, VM extends IMv
 
     public abstract @LayoutRes
     int getLayoutId();
-    public abstract VM getViewModel();
+    public abstract Class<? extends ViewModel> getViewModel();
     public abstract int getBindingVariable();
 
     /**
@@ -58,16 +60,12 @@ public abstract class MvvmBaseActivity<V extends ViewDataBinding, VM extends IMv
      */
     protected void initViewModel() {
         if (getViewModel() != null) {
-//            mViewModel = ViewModelProviders.of(this).get(getViewModel());
+            mViewModel = (VM) new ViewModelProvider(this).get(getViewModel());
         }
     }
 
     @Override
     protected void onDestroy() {
-
-//        if (mViewModel != null && mViewModel.isUIAttached()) {
-//            mViewModel.detachUI();
-//        }
         super.onDestroy();
     }
 

@@ -9,4 +9,7 @@ import androidx.lifecycle.ViewModel;
  */
 
 public abstract class MvvmBaseViewModel extends ViewModel {
+
+
+
 }

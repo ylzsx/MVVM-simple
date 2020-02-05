@@ -33,6 +33,12 @@ public abstract class MvvmNetworkViewModel extends MvvmBaseViewModel implements 
         unBindModel();
     }
 
+    @Override
+    protected void onCleared() {
+        unBindModel();
+        super.onCleared();
+    }
+
     private void unBindModel() {
         if (mModelMap != null) {
             Iterator<String> iterator = mModelMap.keySet().iterator();

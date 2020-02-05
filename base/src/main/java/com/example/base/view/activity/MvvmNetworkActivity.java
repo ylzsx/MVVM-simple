@@ -71,7 +71,6 @@ public abstract class MvvmNetworkActivity<V extends ViewDataBinding, VM extends 
 
     @Override
     protected void onDestroy() {
-        mViewModel.detachModels();
         super.onDestroy();
     }
 
