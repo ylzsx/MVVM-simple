@@ -2,15 +2,9 @@ package com.example.base.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
-import com.example.base.loadSir.EmptyCallback;
-import com.example.base.loadSir.ErrorCallback;
-import com.example.base.loadSir.LoadingCallback;
 import com.example.base.viewmodel.IMvvmBaseViewModel;
-import com.kingja.loadsir.callback.Callback;
-import com.kingja.loadsir.core.LoadService;
-import com.kingja.loadsir.core.LoadSir;
+import com.example.base.viewmodel.IMvvmNetworkViewModel;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
@@ -20,24 +14,20 @@ import androidx.databinding.ViewDataBinding;
 
 /**
  * @author YangZhaoxin.
- * @since 2020/1/10 19:23.
+ * @since 2020/2/4 22:48.
  * email yangzhaoxin@hrsoft.net.
  */
 
-public abstract class MvvmActivity<V extends ViewDataBinding, VM extends IMvvmBaseViewModel>
-        extends AppCompatActivity implements IBaseView {
+public abstract class MvvmBaseActivity<V extends ViewDataBinding, VM extends IMvvmBaseViewModel>
+        extends AppCompatActivity {
 
     protected VM mViewModel;
     protected V mViewDataBinding;
-    private LoadService mLoadService;
 
     public abstract @LayoutRes
     int getLayoutId();
     public abstract VM getViewModel();
     public abstract int getBindingVariable();
-
-    // 网络失败重试方法
-    protected abstract void onRetryBtnClick();
 
     /**
      * 初始化参数,通常用来得到从之前View传来的Bundle等数据
@@ -53,23 +43,31 @@ public abstract class MvvmActivity<V extends ViewDataBinding, VM extends IMvvmBa
         initViewModel();
         performDataBinding();
         initDataAndView();
+        setUIReaction();
     }
 
     /**
-     * 绑定ViewModel
+     * TODO: 将基础的UI展示事件与ViewModel中的LiveData构成观察，一旦ViewModel中的相关LiveData变动，则会触发相应方法
      */
-    private void initViewModel() {
-        mViewModel = getViewModel();
-        if (mViewModel != null) {
-            mViewModel.attachUI(this);
+    protected void setUIReaction() {
+
+    }
+
+    /**
+     * TODO: 绑定ViewModel,解绑viewModel
+     */
+    protected void initViewModel() {
+        if (getViewModel() != null) {
+//            mViewModel = ViewModelProviders.of(this).get(getViewModel());
         }
     }
 
     @Override
     protected void onDestroy() {
-        if (mViewModel != null && mViewModel.isUIAttached()) {
-            mViewModel.detachUI();
-        }
+
+//        if (mViewModel != null && mViewModel.isUIAttached()) {
+//            mViewModel.detachUI();
+//        }
         super.onDestroy();
     }
 
@@ -84,47 +82,6 @@ public abstract class MvvmActivity<V extends ViewDataBinding, VM extends IMvvmBa
             mViewDataBinding.setVariable(getBindingVariable(), mViewModel);
         }
         mViewDataBinding.executePendingBindings();
-    }
-
-    /**
-     * 网络失败时展示页面（空view，错误的view）
-     * @param view  网络失败后要替换的view
-     */
-    public void setLoadSir(View view) {
-        mLoadService = LoadSir.getDefault().register(view, new Callback.OnReloadListener() {
-            @Override
-            public void onReload(View v) {
-                onRetryBtnClick();
-            }
-        });
-    }
-
-    @Override
-    public void onRefreshEmpty(String message) {
-        if (mLoadService != null) {
-            mLoadService.showCallback(EmptyCallback.class);
-        }
-    }
-
-    @Override
-    public void onRefreshFailure(String message) {
-        if (mLoadService != null) {
-            mLoadService.showCallback(ErrorCallback.class);
-        }
-    }
-
-    @Override
-    public void showLoading() {
-        if (mLoadService != null) {
-            mLoadService.showCallback(LoadingCallback.class);
-        }
-    }
-
-    @Override
-    public void showContent() {
-        if (mLoadService != null) {
-            mLoadService.showSuccess();
-        }
     }
 
     public void startActivity(Class<?> clazz) {
@@ -143,3 +100,4 @@ public abstract class MvvmActivity<V extends ViewDataBinding, VM extends IMvvmBa
         }
     }
 }
+

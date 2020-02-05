@@ -12,7 +12,7 @@ import com.example.base.loadSir.EmptyCallback;
 import com.example.base.loadSir.ErrorCallback;
 import com.example.base.loadSir.LoadingCallback;
 import com.example.base.utils.ToastUtil;
-import com.example.base.viewmodel.IMvvmBaseViewModel;
+import com.example.base.viewmodel.IMvvmNetworkViewModel;
 import com.kingja.loadsir.callback.Callback;
 import com.kingja.loadsir.core.LoadService;
 import com.kingja.loadsir.core.LoadSir;
@@ -30,7 +30,7 @@ import androidx.fragment.app.Fragment;
  * email yangzhaoxin@hrsoft.net.
  */
 
-public abstract class MvvmFragment<V extends ViewDataBinding, VM extends IMvvmBaseViewModel> extends Fragment
+public abstract class MvvmFragment<V extends ViewDataBinding, VM extends IMvvmNetworkViewModel> extends Fragment
         implements IBasePagingView {
 
     protected VM mViewModel;

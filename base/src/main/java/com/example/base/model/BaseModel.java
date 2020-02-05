@@ -1,7 +1,5 @@
 package com.example.base.model;
 
-import java.lang.ref.WeakReference;
-
 /**
  * 不分页数据
  * @author YangZhaoxin.
@@ -10,12 +8,6 @@ import java.lang.ref.WeakReference;
  */
 
 public abstract class BaseModel<T> extends SuperBaseModel<T> {
-
-    // ViewModel可能接收到多个数据
-    public interface IModelListener<T> extends SuperBaseModel.IBaseModeListener {
-        void onLoadFinish(BaseModel model, T data);
-        void onLoadFail(BaseModel model, String errorMessage);
-    }
 
     @Override
     protected void notifyCachedData(T data) {
@@ -31,14 +23,7 @@ public abstract class BaseModel<T> extends SuperBaseModel<T> {
             mUIHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    for (WeakReference<IBaseModeListener> weakListener : mWeakListenerArrayList) {
-                        if (weakListener.get() instanceof IModelListener) {
-                            IModelListener listener = (IModelListener) weakListener.get();
-                            if (listener != null) {
-                                listener.onLoadFinish(BaseModel.this, data);
-                            }
-                        }
-                    }
+                    mModelLiveData.postValue(data);
                     // 如果需要缓存数据，加载成功后保存
                     // TODO: 缓存room
                     if (getCachedPreferenceKey() != null) {
@@ -58,14 +43,7 @@ public abstract class BaseModel<T> extends SuperBaseModel<T> {
             mUIHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    for (WeakReference<IBaseModeListener> weakListener : mWeakListenerArrayList) {
-                        if (weakListener.get() instanceof IModelListener) {
-                            IModelListener listener = (IModelListener) weakListener.get();
-                            if (listener != null) {
-                                listener.onLoadFail(BaseModel.this, errorMessage);
-                            }
-                        }
-                    }
+                    // TODO: 错误返回
                 }
             }, 0);
         }

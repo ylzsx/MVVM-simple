@@ -1,22 +1,13 @@
 package com.example.base.viewmodel;
 
 /**
- * @author YangZhaoxin.
- * @since 2020/1/26 16:38.
- * email yangzhaoxin@hrsoft.net.
+ * Time:2020/1/30 12:06
+ * Author: han1254
+ * Email: 1254763408@qq.com
+ * Function:
  */
 
-public interface IMvvmBaseViewModel<V> {
+public interface IMvvmBaseViewModel {
 
-    /**
-     * 绑定UI
-     * @param view
-     */
-    void attachUI(V view);
-
-    V getPageView();
-
-    boolean isUIAttached();
-
-    void detachUI();
+    void showDialog(String content);
 }

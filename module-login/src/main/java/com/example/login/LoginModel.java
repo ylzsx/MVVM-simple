@@ -22,6 +22,7 @@ public class LoginModel extends BaseModel<String> {
         // 网络请求
         String str = "aaa";
         loadSuccess(str);
+
     }
 
     public void test() {

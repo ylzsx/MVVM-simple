@@ -1,11 +1,13 @@
 package com.example.login;
 
-import com.example.base.activity.MvvmActivity;
+import com.example.base.activity.MvvmNetworkActivity;
 import com.example.fw_annotations.BindPath;
 import com.example.login.databinding.ActivityLoginBinding;
 
+import androidx.lifecycle.Observer;
+
 @BindPath("login/LoginActivity")
-public class LoginActivity extends MvvmActivity<ActivityLoginBinding, LoginViewModel> implements LoginViewModel.ILoginVIew {
+public class LoginActivity extends MvvmNetworkActivity<ActivityLoginBinding, LoginViewModel> {
 
     @Override
     public int getLayoutId() {
@@ -36,5 +38,13 @@ public class LoginActivity extends MvvmActivity<ActivityLoginBinding, LoginViewM
     protected void initDataAndView() {
         // 点击登录
         mViewModel.login();
+
+        mViewModel.getLoginLiveData().observe(this, new Observer() {
+            @Override
+            public void onChanged(Object o) {
+
+            }
+        });
     }
+
 }

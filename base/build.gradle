@@ -44,4 +44,5 @@ dependencies {
 
     api deps.project.framework.arouter
     api deps.project.framework.annotations
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 }

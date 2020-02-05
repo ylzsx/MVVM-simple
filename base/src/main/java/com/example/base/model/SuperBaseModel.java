@@ -3,13 +3,12 @@ package com.example.base.model;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.lang.ref.Reference;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
+import com.example.base.network.NetWorkStatus;
+
 import java.lang.reflect.Type;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import androidx.annotation.CallSuper;
+import androidx.lifecycle.MutableLiveData;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -20,23 +19,35 @@ import io.reactivex.disposables.Disposable;
  * email yangzhaoxin@hrsoft.net.
  */
 
-public abstract class SuperBaseModel<T> {
+public abstract class SuperBaseModel<T> implements ISuperBaseModel {
 
     protected Handler mUIHandler = new Handler(Looper.getMainLooper());
     // 管理所有订阅
     private CompositeDisposable mCompositeDisposable;
-    // 监听者
-    protected ReferenceQueue<IBaseModeListener> mReferenceQueue;
-    protected ConcurrentLinkedQueue<WeakReference<IBaseModeListener>> mWeakListenerArrayList;
     private BaseCachedData<T> mData;
+    // TODO: 是否需要都用防倒灌的livedata
+    protected MutableLiveData<T> mModelLiveData;
+    protected MutableLiveData<NetWorkStatus> mNetworkStatus;
 
     public SuperBaseModel() {
-        mReferenceQueue = new ReferenceQueue<>();
-        mWeakListenerArrayList = new ConcurrentLinkedQueue<>();
+        // TODO：是否可以自动释放liveData
+        mModelLiveData = new MutableLiveData<>();
+        mNetworkStatus = new MutableLiveData<>();
+        mNetworkStatus.setValue(NetWorkStatus.INIT);
         if (getCachedPreferenceKey() != null) {
             mData = new BaseCachedData<T>();
         }
         // TODO:添加room缓存
+    }
+
+    @Override
+    public MutableLiveData<NetWorkStatus> getNetworkStatus() {
+        return mNetworkStatus;
+    }
+
+    @Override
+    public void setNetworkStatus(NetWorkStatus netWorkStatus) {
+        mNetworkStatus.postValue(netWorkStatus);
     }
 
     /**
@@ -48,6 +59,7 @@ public abstract class SuperBaseModel<T> {
      * 数据加载
      */
     protected abstract void load();
+
     protected abstract void notifyCachedData(T data);
 
     /**
@@ -83,59 +95,8 @@ public abstract class SuperBaseModel<T> {
         return null;
     }
 
-    /**
-     * 该接口由相应子类去实现
-     */
-    protected interface IBaseModeListener {
-    }
-
-    /**
-     * 注册监听
-     * @param listener
-     */
-    public void register(IBaseModeListener listener) {
-        // 可以注册多个监听者
-        if (listener == null) {
-            return;
-        }
-
-        synchronized (this) {
-            // 每次注册的时候清理已经被系统回收的对象，只有被回收的对象才会加入mReferenceQueue
-            Reference<? extends IBaseModeListener> releaseListener = null;
-            while ((releaseListener = mReferenceQueue.poll()) != null) {
-                mWeakListenerArrayList.remove(releaseListener);
-            }
-
-            // 判断该监听是否已经注册
-            for (WeakReference<IBaseModeListener> weakListener : mWeakListenerArrayList) {
-                IBaseModeListener listenerItem = weakListener.get();
-                if (listenerItem == listener) {
-                    return;
-                }
-            }
-            WeakReference<IBaseModeListener> weakListener = new WeakReference<>(listener, mReferenceQueue);
-            mWeakListenerArrayList.add(weakListener);
-        }
-    }
-
-    /**
-     * 取消监听
-     * @param listener
-     */
-    public void unRegister(IBaseModeListener listener) {
-        if (listener == null) {
-            return;
-        }
-
-        synchronized (this) {
-            for (WeakReference<IBaseModeListener> weakListener : mWeakListenerArrayList) {
-                IBaseModeListener listenerItem = weakListener.get();
-                if (listenerItem == listener) {
-                    mWeakListenerArrayList.remove(weakListener);
-                    break;
-                }
-            }
-        }
+    public MutableLiveData<T> getModelLiveData() {
+        return mModelLiveData;
     }
 
     /**
@@ -178,7 +139,7 @@ public abstract class SuperBaseModel<T> {
 
     public void getCachedDataAndLoad() {
         if (getCachedPreferenceKey() != null) { // 有sp缓存数据
-            // TODO: 加入缓存
+            // TODO: 加入缓存 postValue
         }
         load();
     }

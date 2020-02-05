@@ -1,10 +1,10 @@
 package com.example.mvvm_simple;
 
-import com.example.base.activity.MvvmActivity;
-import com.example.base.viewmodel.MvvmBaseViewModel;
+import com.example.base.activity.MvvmNetworkActivity;
+import com.example.base.viewmodel.MvvmNetworkViewModel;
 import com.example.mvvm_simple.databinding.ActivityMainBinding;
 
-public class MainActivity extends MvvmActivity<ActivityMainBinding, MvvmBaseViewModel> {
+public class MainActivity extends MvvmNetworkActivity<ActivityMainBinding, MvvmNetworkViewModel> {
 
     @Override
     public int getLayoutId() {
@@ -12,7 +12,7 @@ public class MainActivity extends MvvmActivity<ActivityMainBinding, MvvmBaseView
     }
 
     @Override
-    public MvvmBaseViewModel getViewModel() {
+    public MvvmNetworkViewModel getViewModel() {
         return null;
     }
 
