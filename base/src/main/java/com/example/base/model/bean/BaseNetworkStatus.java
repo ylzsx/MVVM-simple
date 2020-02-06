@@ -1,4 +1,4 @@
-package com.example.base.model;
+package com.example.base.model.bean;
 
 import com.example.base.network.NetWorkStatus;
 

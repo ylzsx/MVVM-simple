@@ -11,10 +11,10 @@ public abstract class BasePagingModel<T> extends SuperBaseModel<T> {
     protected boolean isRefresh = true;
     protected int pageNumber = 0;
 
-    @Override
-    protected void notifyCachedData(T data) {
-        loadSuccess(data, false, true, true);
-    }
+//    @Override
+//    protected void notifyCachedData(T data) {
+//        loadSuccess(data, false, true, true);
+//    }
 
     protected void loadSuccess(T data, final boolean isEmpty, final boolean isFirstPage, final boolean hasNextPage) {
         synchronized (this) {
@@ -24,9 +24,9 @@ public abstract class BasePagingModel<T> extends SuperBaseModel<T> {
                     mModelLiveData.postValue(data);
                     // 如果需要缓存数据，加载成功后保存
                     // TODO: 缓存room
-                    if (getCachedPreferenceKey() != null && isFirstPage) {
-                        saveDataToPreference(data);
-                    }
+//                    if (getCachedPreferenceKey() != null && isFirstPage) {
+//                        saveDataToPreference(data);
+//                    }
                 }
             }, 0);
         }

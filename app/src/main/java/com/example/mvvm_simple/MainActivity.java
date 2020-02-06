@@ -4,6 +4,8 @@ import com.example.base.view.activity.MvvmNetworkActivity;
 import com.example.base.viewmodel.MvvmNetworkViewModel;
 import com.example.mvvm_simple.databinding.ActivityMainBinding;
 
+import androidx.lifecycle.ViewModel;
+
 public class MainActivity extends MvvmNetworkActivity<ActivityMainBinding, MvvmNetworkViewModel> {
 
     @Override
@@ -12,9 +14,10 @@ public class MainActivity extends MvvmNetworkActivity<ActivityMainBinding, MvvmN
     }
 
     @Override
-    public MvvmNetworkViewModel getViewModel() {
-        return null;
+    public Class<? extends ViewModel> getViewModel() {
+        return MvvmNetworkViewModel.class;
     }
+
 
     @Override
     public int getBindingVariable() {

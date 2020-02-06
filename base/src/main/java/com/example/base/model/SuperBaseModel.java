@@ -2,6 +2,11 @@ package com.example.base.model;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+
+import com.example.base.model.bean.BaseCachedData;
+import com.example.base.model.bean.BaseNetworkStatus;
+import com.example.base.network.NetWorkStatus;
 
 import java.lang.reflect.Type;
 
@@ -22,7 +27,7 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     protected Handler mUIHandler = new Handler(Looper.getMainLooper());
     // 管理所有订阅
     private CompositeDisposable mCompositeDisposable;
-    private BaseCachedData<T> mData;
+    protected BaseCachedData<T> mData;
     // TODO: 是否需要都用防倒灌的livedata
     protected MutableLiveData<T> mModelLiveData;
     protected MutableLiveData<BaseNetworkStatus> mNetworkStatus;
@@ -32,11 +37,9 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
         mModelLiveData = new MutableLiveData<>();
         mNetworkStatus = new MutableLiveData<>();
         mNetworkStatus.setValue(new BaseNetworkStatus());
-        if (getCachedPreferenceKey() != null) {
-            mData = new BaseCachedData<T>();
-        }
-        // TODO:添加room缓存
+        mData = new BaseCachedData<T>();
     }
+
 
     @Override
     public MutableLiveData<BaseNetworkStatus> getNetworkStatus() {
@@ -58,8 +61,6 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
      */
     protected abstract void load();
 
-    protected abstract void notifyCachedData(T data);
-
     /**
      * 该model的数据是否需要sp缓存，如需要则重写该方法，返回缓存的key
      * @return
@@ -74,15 +75,6 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
      */
     protected Type getTClass() {
         return null;
-    }
-
-    /**
-     * 是否需要更新数据，可以在这个方法中定义更新策略
-     * 默认每次请求都更新数据
-     * @return
-     */
-    protected boolean isNeedToUpdate() {
-        return true;
     }
 
     /**
@@ -101,12 +93,19 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
      * 当app在打开时由于网络慢或者异常情况下，设置sp级缓存，或者apk级缓存
      * @param data
      */
-    protected void saveDataToPreference(T data) {
+    protected void saveData(T data) {
         mData.setData(data);
         mData.setUpdateTimeInMills(System.currentTimeMillis());
-        // TODO：保存数据
+        if (isSaveToMemory()) {
+            saveDataToMemory(mData);
+        }
+        if (getCachedPreferenceKey() != null) {
+            saveDataToPreference(mData);
+        }
+        if (isSaveToDataBase()) {
+            saveDataToDataBase(mData);
+        }
     }
-
 
     /**
      * 保存数据，防止内存泄露
@@ -136,9 +135,113 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     }
 
     public void getCachedDataAndLoad() {
-        if (getCachedPreferenceKey() != null) { // 有sp缓存数据
-            // TODO: 加入缓存 postValue
+        if (isSaveToMemory()) {
+            T memoryData = getMemoryData();
+            if (memoryData == null) {
+                Log.e("DATA NULL", "App memory doesn't contain the data you want");
+            } else {
+                mModelLiveData.postValue(memoryData);
+                mData.setData(mModelLiveData.getValue());
+            }
         }
-        load();
+
+        if (getCachedPreferenceKey() != null) {
+            T spData = getPreferenceData(getCachedPreferenceKey());
+            if (spData == null) {
+                Log.e("DATA NULL", "Local Preference doesn't contain the data you want");
+            } else {
+                mModelLiveData.postValue(spData);
+                mData.setData(mModelLiveData.getValue());
+            }
+        }
+
+        if (isSaveToDataBase()) {
+            T dataBaseData = getDataBaseData();
+            if (dataBaseData == null) {
+                Log.e("DATA NULL", "Local database doesn't contain the data you want");
+            } else {
+                mModelLiveData.postValue(dataBaseData);
+                mData.setData(mModelLiveData.getValue());
+            }
+        }
+
+        // 倘若缓存中没有数据同时有网，则必须去网络加载
+        if (mModelLiveData.getValue() == null) {
+            judgeStatusAndLoad();
+            return;
+        }
+
+        if (isFetchRemote()) {
+            judgeStatusAndLoad();
+        }
+
     }
+
+    // TODO: 流量 wifi通知到view时变 类似于观察者模式
+    private void judgeStatusAndLoad() {
+//        mNetworkStatus.setValue(getNetStatus());
+        if (!(mNetworkStatus.getValue().getStatus() == NetWorkStatus.NO_NETWORK)) {
+            load();
+        }
+    }
+
+    private BaseNetworkStatus getNetStatus() {
+        return null;
+    }
+
+    /**
+     * 是否进行网络请求
+     * @return
+     */
+    protected boolean isFetchRemote() {
+        return true;
+    }
+
+    /**
+     * 数据是否存入数据库
+     * @return
+     */
+    protected boolean isSaveToDataBase() {
+        return false;
+    }
+
+    /**
+     * 是否存入内存
+     * @return
+     */
+    protected boolean isSaveToMemory() {
+        return false;
+    }
+
+    /**
+     * 存入内存
+     * @param data
+     */
+    protected abstract void saveDataToMemory(BaseCachedData<T> data);
+
+    /**
+     * 存入 saveDataToPreference
+     * @param data
+     */
+    protected abstract void saveDataToPreference(BaseCachedData<T> data);
+
+    /**
+     * 数据存入数据库
+     * @param data
+     */
+    protected abstract void saveDataToDataBase(BaseCachedData<T> data);
+
+    /**
+     * 获得SharedPreference里的数据
+     * @param key
+     */
+    protected abstract T getPreferenceData(String key);
+
+    /**
+     * 获得数据库里的数据
+     * @return
+     */
+    protected abstract T getDataBaseData();
+
+    protected abstract T getMemoryData();
 }

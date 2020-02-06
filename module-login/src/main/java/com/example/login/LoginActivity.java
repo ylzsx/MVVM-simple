@@ -1,10 +1,12 @@
 package com.example.login;
 
 import com.example.base.view.activity.MvvmNetworkActivity;
-import com.example.base.model.BaseNetworkStatus;
+import com.example.base.model.bean.BaseNetworkStatus;
 import com.example.base.utils.ToastUtil;
 import com.example.fw_annotations.BindPath;
 import com.example.login.databinding.ActivityLoginBinding;
+
+import androidx.lifecycle.ViewModel;
 
 @BindPath("login/LoginActivity")
 public class LoginActivity extends MvvmNetworkActivity<ActivityLoginBinding, LoginViewModel> {
@@ -15,8 +17,8 @@ public class LoginActivity extends MvvmNetworkActivity<ActivityLoginBinding, Log
     }
 
     @Override
-    public LoginViewModel getViewModel() {
-        return new LoginViewModel();
+    public Class<? extends ViewModel> getViewModel() {
+        return LoginViewModel.class;
     }
 
     @Override
