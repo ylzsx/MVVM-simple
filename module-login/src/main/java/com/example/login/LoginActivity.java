@@ -1,7 +1,7 @@
 package com.example.login;
 
 import com.example.base.view.activity.MvvmNetworkActivity;
-import com.example.base.model.BaseNetworkStatus;
+import com.example.base.model.bean.BaseNetworkStatus;
 import com.example.base.utils.ToastUtil;
 import com.example.fw_annotations.BindPath;
 import com.example.login.databinding.ActivityLoginBinding;

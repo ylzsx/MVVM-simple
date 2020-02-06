@@ -1,5 +1,7 @@
 package com.example.base.model;
 
+import com.example.base.model.bean.BaseNetworkStatus;
+
 import androidx.lifecycle.MutableLiveData;
 
 /**

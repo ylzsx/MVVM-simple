@@ -1,6 +1,6 @@
 package com.example.base.view;
 
-import com.example.base.model.BaseNetworkStatus;
+import com.example.base.model.bean.BaseNetworkStatus;
 
 /**
  * @author YangZhaoxin.

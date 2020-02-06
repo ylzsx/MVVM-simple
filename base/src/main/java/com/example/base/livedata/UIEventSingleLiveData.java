@@ -1,6 +1,6 @@
 package com.example.base.livedata;
 
-import com.example.base.model.UIEvent;
+import com.example.base.model.bean.UIEvent;
 
 /**
  * Time:2020/1/30 17:02
