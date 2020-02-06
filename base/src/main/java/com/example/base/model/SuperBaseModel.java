@@ -179,7 +179,7 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
 
     // TODO: 流量 wifi通知到view时变 类似于观察者模式
     private void judgeStatusAndLoad() {
-        mNetworkStatus.setValue(getNetStatus());
+//        mNetworkStatus.setValue(getNetStatus());
         if (!(mNetworkStatus.getValue().getStatus() == NetWorkStatus.NO_NETWORK)) {
             load();
         }
