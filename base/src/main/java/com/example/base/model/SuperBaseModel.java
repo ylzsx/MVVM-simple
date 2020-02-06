@@ -2,6 +2,7 @@ package com.example.base.model;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import java.lang.reflect.Type;
 
@@ -22,7 +23,7 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     protected Handler mUIHandler = new Handler(Looper.getMainLooper());
     // 管理所有订阅
     private CompositeDisposable mCompositeDisposable;
-    private BaseCachedData<T> mData;
+    protected BaseCachedData<T> mData;
     // TODO: 是否需要都用防倒灌的livedata
     protected MutableLiveData<T> mModelLiveData;
     protected MutableLiveData<BaseNetworkStatus> mNetworkStatus;
@@ -32,11 +33,10 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
         mModelLiveData = new MutableLiveData<>();
         mNetworkStatus = new MutableLiveData<>();
         mNetworkStatus.setValue(new BaseNetworkStatus());
-        if (getCachedPreferenceKey() != null) {
-            mData = new BaseCachedData<T>();
-        }
-        // TODO:添加room缓存
+        mData = new BaseCachedData<T>();
+
     }
+
 
     @Override
     public MutableLiveData<BaseNetworkStatus> getNetworkStatus() {
@@ -101,10 +101,11 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
      * 当app在打开时由于网络慢或者异常情况下，设置sp级缓存，或者apk级缓存
      * @param data
      */
-    protected void saveDataToPreference(T data) {
+    protected void saveData(T data) {
         mData.setData(data);
         mData.setUpdateTimeInMills(System.currentTimeMillis());
         // TODO：保存数据
+        saveDataToDataBase(mData);
     }
 
 
@@ -136,9 +137,94 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     }
 
     public void getCachedDataAndLoad() {
-        if (getCachedPreferenceKey() != null) { // 有sp缓存数据
-            // TODO: 加入缓存 postValue
+//        if (getCachedPreferenceKey() != null) { // 有sp缓存数据
+//            // TODO: 加入缓存 postValue
+//        }
+//        load();
+
+        if (isLoadFromMemory()) {
+            if (getMemoryData() == null) {
+                Log.e("DATA NULL", "App memory doesn't contain the data you want");
+            } else {
+                mModelLiveData.postValue(getMemoryData());
+            }
+            mData.setData(mModelLiveData.getValue());
         }
-        load();
+
+        if (isLoadFromDataBase()) {
+            if (getCachedPreferenceKey() != null) {
+                getSpData(getCachedPreferenceKey());
+            }
+
+            if (getDataBaseData() == null) {
+                Log.e("DATA NULL", "Local database doesn't contain the data you want");
+            } else {
+                mModelLiveData.postValue(getDataBaseData());
+            }
+
+            mData.setData(mModelLiveData.getValue());
+        }
+
+
+        if (isFetchRemote()) {
+            load();
+        }
+
     }
+
+    /**
+     * 是否从内存读取数据
+     * @return
+     */
+    public abstract boolean isLoadFromMemory();
+
+    /**
+     * 是否从数据库（缓存）读取数据
+     * @return
+     */
+    public abstract boolean isLoadFromDataBase();
+
+    /**
+     * 是否进行网络请求
+     * @return
+     */
+    public abstract boolean isFetchRemote();
+
+    /**
+     * 数据是否存入数据库
+     * @return
+     */
+    public abstract boolean isSaveToDataBase();
+
+    /**
+     * 是否存入内存
+     * @return
+     */
+    public abstract boolean isSaveToMemory();
+
+    /**
+     * 存入内存
+     * @param data
+     */
+    public abstract void saveDataToMemory(T data);
+
+    /**
+     * 数据存入数据库
+     * @param data
+     */
+    public abstract void saveDataToDataBase(BaseCachedData<T> data);
+
+    /**
+     * 获得SharedPreference里的数据的key
+     * @param key
+     */
+    public abstract void getSpData(String key);
+
+    /**
+     * 获得数据库里的数据
+     * @return
+     */
+    protected abstract T getDataBaseData();
+
+    protected abstract T getMemoryData();
 }

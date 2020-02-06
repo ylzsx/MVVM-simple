@@ -16,6 +16,7 @@ public abstract class BaseModel<T> extends SuperBaseModel<T> {
         loadSuccess(data);
     }
 
+
     /**
      * 加载网络数据成功，通知所有订阅者加载结果
      * @param data
@@ -26,16 +27,16 @@ public abstract class BaseModel<T> extends SuperBaseModel<T> {
                 @Override
                 public void run() {
                     mModelLiveData.postValue(data);
+                    mData.setData(data);
                     BaseNetworkStatus status = mNetworkStatus.getValue();
                     if (status == null) {
                         status = new BaseNetworkStatus();
                     }
                     status.setStatus(NetWorkStatus.DONE);
                     mNetworkStatus.postValue(status);
-                    // 如果需要缓存数据，加载成功后保存
                     // TODO: 缓存room
-                    if (getCachedPreferenceKey() != null) {
-                        saveDataToPreference(data);
+                    if (isSaveToDataBase()) {
+                        saveData(data);
                     }
                 }
             }, 0);
@@ -55,5 +56,56 @@ public abstract class BaseModel<T> extends SuperBaseModel<T> {
                 }
             }, 0);
         }
+    }
+
+    @Override
+    public boolean isLoadFromMemory() {
+        return false;
+    }
+
+
+    @Override
+    public boolean isLoadFromDataBase() {
+        return false;
+    }
+
+    @Override
+    public boolean isFetchRemote() {
+        return true;
+    }
+
+    @Override
+    public boolean isSaveToDataBase() {
+        return true;
+    }
+
+    @Override
+    public boolean isSaveToMemory() {
+        return false;
+    }
+
+    @Override
+    public void saveDataToMemory(T data) {
+
+    }
+
+    @Override
+    public void saveDataToDataBase(BaseCachedData<T> data) {
+
+    }
+
+    @Override
+    public void getSpData(String key) {
+
+    }
+
+    @Override
+    protected T getDataBaseData() {
+        return null;
+    }
+
+    @Override
+    protected T getMemoryData() {
+        return null;
     }
 }
