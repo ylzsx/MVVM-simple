@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.example.base.network.NetWorkStatus;
+
 import java.lang.reflect.Type;
 
 import androidx.annotation.CallSuper;
@@ -165,12 +167,26 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
             mData.setData(mModelLiveData.getValue());
         }
 
+        if (mModelLiveData.getValue() == null) {
+            jugeStatusAndLoad();
+        }
 
         if (isFetchRemote()) {
-            load();
+            jugeStatusAndLoad();
         }
 
     }
+
+    protected void jugeStatusAndLoad() {
+        mNetworkStatus.setValue(getNetStatus());
+        if (!(mNetworkStatus.getValue().getStatus() == NetWorkStatus.NO_NETWORK)) {
+            load();
+        }
+    }
+
+
+
+    protected abstract BaseNetworkStatus getNetStatus();
 
     /**
      * 是否从内存读取数据

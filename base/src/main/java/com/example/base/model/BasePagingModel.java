@@ -25,7 +25,7 @@ public abstract class BasePagingModel<T> extends SuperBaseModel<T> {
                     // 如果需要缓存数据，加载成功后保存
                     // TODO: 缓存room
                     if (getCachedPreferenceKey() != null && isFirstPage) {
-                        saveDataToPreference(data);
+                        saveData(data);
                     }
                 }
             }, 0);

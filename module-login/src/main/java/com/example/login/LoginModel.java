@@ -1,6 +1,7 @@
 package com.example.login;
 
 import com.example.base.model.BaseModel;
+import com.example.base.model.BaseNetworkStatus;
 
 /**
  * @author YangZhaoxin.
@@ -23,6 +24,11 @@ public class LoginModel extends BaseModel<String> {
         String str = "aaa";
         loadSuccess(str);
 
+    }
+
+    @Override
+    protected BaseNetworkStatus getNetStatus() {
+        return null;
     }
 
     public void test() {
