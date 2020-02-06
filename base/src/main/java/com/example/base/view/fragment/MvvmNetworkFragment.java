@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.base.view.IBaseView;
-import com.example.base.model.BaseNetworkStatus;
+import com.example.base.model.bean.BaseNetworkStatus;
 import com.example.base.model.SuperBaseModel;
 import com.example.base.viewmodel.IMvvmNetworkViewModel;
 

@@ -1,5 +1,7 @@
 package com.example.base.model;
 
+import com.example.base.model.bean.BaseCachedData;
+import com.example.base.model.bean.BaseNetworkStatus;
 import com.example.base.network.NetWorkStatus;
 
 /**
@@ -11,18 +13,13 @@ import com.example.base.network.NetWorkStatus;
 
 public abstract class BaseModel<T> extends SuperBaseModel<T> {
 
-    @Override
-    protected void notifyCachedData(T data) {
-        loadSuccess(data);
-    }
-
-
     /**
      * 加载网络数据成功，通知所有订阅者加载结果
      * @param data
      */
     protected void loadSuccess(T data) {
         synchronized (this) {
+            // TODO: 统一切换到子线程 之后通过ThreadUtil统一管理线程池
             mUIHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -35,9 +32,7 @@ public abstract class BaseModel<T> extends SuperBaseModel<T> {
                     status.setStatus(NetWorkStatus.DONE);
                     mNetworkStatus.postValue(status);
                     // TODO: 缓存room
-                    if (isSaveToDataBase()) {
-                        saveData(data);
-                    }
+                    saveData(data);
                 }
             }, 0);
         }
@@ -59,53 +54,32 @@ public abstract class BaseModel<T> extends SuperBaseModel<T> {
     }
 
     @Override
-    public boolean isLoadFromMemory() {
-        return false;
-    }
-
-
-    @Override
-    public boolean isLoadFromDataBase() {
-        return false;
-    }
-
-    @Override
-    public boolean isFetchRemote() {
-        return true;
-    }
-
-    @Override
-    public boolean isSaveToDataBase() {
-        return true;
-    }
-
-    @Override
-    public boolean isSaveToMemory() {
-        return false;
-    }
-
-    @Override
-    public void saveDataToMemory(T data) {
+    protected void saveDataToMemory(BaseCachedData<T> data) {
 
     }
 
     @Override
-    public void saveDataToDataBase(BaseCachedData<T> data) {
+    protected void saveDataToDataBase(BaseCachedData<T> data) {
 
     }
 
     @Override
-    public void getSpData(String key) {
+    protected void saveDataToPreference(BaseCachedData<T> data) {
 
-    }
-
-    @Override
-    protected T getDataBaseData() {
-        return null;
     }
 
     @Override
     protected T getMemoryData() {
+        return null;
+    }
+
+    @Override
+    protected T getPreferenceData(String key) {
+        return null;
+    }
+
+    @Override
+    protected T getDataBaseData() {
         return null;
     }
 }

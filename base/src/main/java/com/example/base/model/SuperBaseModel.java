@@ -4,6 +4,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.example.base.model.bean.BaseCachedData;
+import com.example.base.model.bean.BaseNetworkStatus;
+import com.example.base.network.NetWorkStatus;
+
 import java.lang.reflect.Type;
 
 import androidx.annotation.CallSuper;
@@ -34,7 +38,6 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
         mNetworkStatus = new MutableLiveData<>();
         mNetworkStatus.setValue(new BaseNetworkStatus());
         mData = new BaseCachedData<T>();
-
     }
 
 
@@ -58,8 +61,6 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
      */
     protected abstract void load();
 
-    protected abstract void notifyCachedData(T data);
-
     /**
      * 该model的数据是否需要sp缓存，如需要则重写该方法，返回缓存的key
      * @return
@@ -74,15 +75,6 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
      */
     protected Type getTClass() {
         return null;
-    }
-
-    /**
-     * 是否需要更新数据，可以在这个方法中定义更新策略
-     * 默认每次请求都更新数据
-     * @return
-     */
-    protected boolean isNeedToUpdate() {
-        return true;
     }
 
     /**
@@ -104,10 +96,16 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     protected void saveData(T data) {
         mData.setData(data);
         mData.setUpdateTimeInMills(System.currentTimeMillis());
-        // TODO：保存数据
-        saveDataToDataBase(mData);
+        if (isSaveToMemory()) {
+            saveDataToMemory(mData);
+        }
+        if (getCachedPreferenceKey() != null) {
+            saveDataToPreference(mData);
+        }
+        if (isSaveToDataBase()) {
+            saveDataToDataBase(mData);
+        }
     }
-
 
     /**
      * 保存数据，防止内存泄露
@@ -137,88 +135,107 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     }
 
     public void getCachedDataAndLoad() {
-//        if (getCachedPreferenceKey() != null) { // 有sp缓存数据
-//            // TODO: 加入缓存 postValue
-//        }
-//        load();
-
-        if (isLoadFromMemory()) {
-            if (getMemoryData() == null) {
+        if (isSaveToMemory()) {
+            T memoryData = getMemoryData();
+            if (memoryData == null) {
                 Log.e("DATA NULL", "App memory doesn't contain the data you want");
             } else {
-                mModelLiveData.postValue(getMemoryData());
+                mModelLiveData.postValue(memoryData);
+                mData.setData(mModelLiveData.getValue());
             }
-            mData.setData(mModelLiveData.getValue());
         }
 
-        if (isLoadFromDataBase()) {
-            if (getCachedPreferenceKey() != null) {
-                getSpData(getCachedPreferenceKey());
+        if (getCachedPreferenceKey() != null) {
+            T spData = getPreferenceData(getCachedPreferenceKey());
+            if (spData == null) {
+                Log.e("DATA NULL", "Local Preference doesn't contain the data you want");
+            } else {
+                mModelLiveData.postValue(spData);
+                mData.setData(mModelLiveData.getValue());
             }
+        }
 
-            if (getDataBaseData() == null) {
+        if (isSaveToDataBase()) {
+            T dataBaseData = getDataBaseData();
+            if (dataBaseData == null) {
                 Log.e("DATA NULL", "Local database doesn't contain the data you want");
             } else {
-                mModelLiveData.postValue(getDataBaseData());
+                mModelLiveData.postValue(dataBaseData);
+                mData.setData(mModelLiveData.getValue());
             }
-
-            mData.setData(mModelLiveData.getValue());
         }
 
+        // 倘若缓存中没有数据同时有网，则必须去网络加载
+        if (mModelLiveData.getValue() == null) {
+            judgeStatusAndLoad();
+            return;
+        }
 
         if (isFetchRemote()) {
-            load();
+            judgeStatusAndLoad();
         }
 
     }
 
-    /**
-     * 是否从内存读取数据
-     * @return
-     */
-    public abstract boolean isLoadFromMemory();
+    // TODO: 流量 wifi通知到view时变 类似于观察者模式
+    private void judgeStatusAndLoad() {
+        mNetworkStatus.setValue(getNetStatus());
+        if (!(mNetworkStatus.getValue().getStatus() == NetWorkStatus.NO_NETWORK)) {
+            load();
+        }
+    }
 
-    /**
-     * 是否从数据库（缓存）读取数据
-     * @return
-     */
-    public abstract boolean isLoadFromDataBase();
+    private BaseNetworkStatus getNetStatus() {
+        return null;
+    }
 
     /**
      * 是否进行网络请求
      * @return
      */
-    public abstract boolean isFetchRemote();
+    protected boolean isFetchRemote() {
+        return true;
+    }
 
     /**
      * 数据是否存入数据库
      * @return
      */
-    public abstract boolean isSaveToDataBase();
+    protected boolean isSaveToDataBase() {
+        return false;
+    }
 
     /**
      * 是否存入内存
      * @return
      */
-    public abstract boolean isSaveToMemory();
+    protected boolean isSaveToMemory() {
+        return false;
+    }
 
     /**
      * 存入内存
      * @param data
      */
-    public abstract void saveDataToMemory(T data);
+    protected abstract void saveDataToMemory(BaseCachedData<T> data);
+
+    /**
+     * 存入 saveDataToPreference
+     * @param data
+     */
+    protected abstract void saveDataToPreference(BaseCachedData<T> data);
 
     /**
      * 数据存入数据库
      * @param data
      */
-    public abstract void saveDataToDataBase(BaseCachedData<T> data);
+    protected abstract void saveDataToDataBase(BaseCachedData<T> data);
 
     /**
-     * 获得SharedPreference里的数据的key
+     * 获得SharedPreference里的数据
      * @param key
      */
-    public abstract void getSpData(String key);
+    protected abstract T getPreferenceData(String key);
 
     /**
      * 获得数据库里的数据

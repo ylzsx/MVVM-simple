@@ -1,4 +1,4 @@
-package com.example.base.model;
+package com.example.base.model.bean;
 
 /**
  * Time:2020/1/30 16:57
