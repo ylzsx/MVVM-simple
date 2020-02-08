@@ -1,10 +1,5 @@
 package com.example.login;
-
-import android.util.Log;
-
-import com.example.base.nettype.NetworkManager;
-import com.example.base.nettype.annotation.Network;
-import com.example.base.nettype.type.NetType;
+import com.example.base.nettype.type.NetworkDetailType;
 import com.example.base.view.activity.MvvmNetworkActivity;
 import com.example.base.model.bean.BaseNetworkStatus;
 import com.example.base.utils.ToastUtil;
@@ -59,5 +54,20 @@ public class LoginActivity extends MvvmNetworkActivity<ActivityLoginBinding, Log
         if (LoginModel.tagName.equals(key)) {
             ToastUtil.show(this, "没有网络怎么请求？");
         }
+    }
+
+    @Override
+    protected void onNetWorkChange(NetworkDetailType networkDetailType) {
+       switch (networkDetailType) {
+           case NETWORK_NO:
+               ToastUtil.show(this, "没网了没网了");
+               break;
+           case NETWORK_WIFI:
+               ToastUtil.show(this, "wifi网络可放心食用");
+               break;
+           default:
+               ToastUtil.show(this, "流量小心");
+               break;
+       }
     }
 }

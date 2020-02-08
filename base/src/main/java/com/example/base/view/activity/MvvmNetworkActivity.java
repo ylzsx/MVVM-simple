@@ -1,9 +1,12 @@
 package com.example.base.view.activity;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.base.model.bean.BaseNetworkStatus;
 import com.example.base.model.SuperBaseModel;
+import com.example.base.nettype.netchange.NetChangeWatcherUtil;
+import com.example.base.nettype.type.NetworkDetailType;
 import com.example.base.view.IBaseView;
 import com.example.base.viewmodel.IMvvmNetworkViewModel;
 
@@ -45,7 +48,22 @@ public abstract class MvvmNetworkActivity<V extends ViewDataBinding, VM extends 
                 observeNet(key, (BaseNetworkStatus) status);
             });
         }
+
+        if (!(NetChangeWatcherUtil.getInstance().getNetDetailType() == null)) {
+            NetChangeWatcherUtil.getInstance().getNetDetailType().observe(this, networkDetailType -> {
+                onNetWorkChange(networkDetailType);
+            });
+        } else {
+            Log.d("Not init", "Not init the NetChangeWatcher");
+        }
+
     }
+
+    /**
+     * 监测网络状态变化
+     * @param networkDetailType
+     */
+    protected void onNetWorkChange(NetworkDetailType networkDetailType) { }
 
     protected void observeNet(String key, BaseNetworkStatus status) {
         switch (status.getStatus()) {

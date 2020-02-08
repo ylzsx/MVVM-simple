@@ -1,12 +1,7 @@
 package com.example.login;
 
-import android.app.usage.NetworkStatsManager;
-
 import com.example.base.BaseApplication;
-import com.example.base.nettype.NetStateReceiver;
-import com.example.base.nettype.NetworkManager;
-import com.example.base.nettype.utils.NetTypeUtil;
-import com.example.base.network.NetWorkStatus;
+import com.example.base.nettype.netchange.NetChangeWatcherUtil;
 
 /**
  * Time:2020/2/7 11:34
@@ -19,7 +14,8 @@ public class LoginApp extends BaseApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        NetworkManager.getInstance().init(this);
-        NetTypeUtil.register(this);
+//        NetworkManager.getInstance().init(this);
+//        NetTypeUtil.register(this);
+        NetChangeWatcherUtil.getInstance().init(this);
     }
 }

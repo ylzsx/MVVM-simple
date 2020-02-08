@@ -5,16 +5,15 @@ import android.os.Looper;
 import android.util.Log;
 import com.example.base.model.bean.BaseCachedData;
 import com.example.base.model.bean.BaseNetworkStatus;
-import com.example.base.nettype.NetStateReceiver;
-import com.example.base.nettype.NetworkManager;
-import com.example.base.nettype.annotation.Network;
+import com.example.base.nettype.netchange.NetChangeWatcherUtil;
 import com.example.base.nettype.type.NetType;
-import com.example.base.nettype.utils.NetTypeUtil;
+import com.example.base.nettype.type.NetworkDetailType;
 import com.example.base.network.NetWorkStatus;
 
 import java.lang.reflect.Type;
 
 import androidx.annotation.CallSuper;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -35,10 +34,10 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     // TODO: 是否需要都用防倒灌的livedata
     protected MutableLiveData<T> mModelLiveData;
     protected MutableLiveData<BaseNetworkStatus> mNetworkStatus;
-
     protected MutableLiveData<NetType> mNetType;
-
-    protected NetTypeUtil.CurrentNetworkType mCurrentNetworkType;
+    //MediatorLiveData可以对livedata进行观察，不需要设置owner
+    //TODO:可以通过这个变量来对网络状态进行观察，但是我把对网络状态的实时监测放在了view层
+    protected MediatorLiveData<NetworkDetailType> networkDetailTypeWatcher;
 
     public SuperBaseModel() {
         // TODO：是否可以自动释放liveData
@@ -47,8 +46,6 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
         mNetworkStatus.setValue(new BaseNetworkStatus());
         mData = new BaseCachedData<T>();
         mNetType = new MutableLiveData<>();
-        //注册网络监测
-        NetworkManager.getInstance().register(this);
     }
 
 
@@ -128,7 +125,6 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
             mCompositeDisposable.dispose();
         }
 
-        NetworkManager.getInstance().unRegister(this);
     }
 
     /**
@@ -194,14 +190,20 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
 
     // TODO: 流量 wifi通知到view时变 类似于观察者模式
     private void judgeStatusAndLoad() {
-//        mNetworkStatus.setValue(getNetStatus());
+
         BaseNetworkStatus baseNetworkStatus = mNetworkStatus.getValue();
-//        if (mNetType.getValue() == NetType.NONE) {
+//        if ((mCurrentNetworkType = NetTypeUtil.getNetworkType()) == NetTypeUtil.CurrentNetworkType.NETWORK_NO) {
 //            baseNetworkStatus.setType(NetType.NONE);
 //            baseNetworkStatus.setStatus(NetWorkStatus.NO_NETWORK);
 //            mNetworkStatus.postValue(baseNetworkStatus);
+//        } else {
+//            baseNetworkStatus.setStatus(NetWorkStatus.INIT);
+//            mNetworkStatus.postValue(baseNetworkStatus);
+//            load();
 //        }
-        if ((mCurrentNetworkType = NetTypeUtil.getNetworkType()) == NetTypeUtil.CurrentNetworkType.NETWORK_NO) {
+
+        //在每次调用加载方法前会自动检测网络状态量，而对网络状态的实时监测我放在了view层
+        if (NetChangeWatcherUtil.getInstance().getNetDetailType().getValue() == NetworkDetailType.NETWORK_NO) {
             baseNetworkStatus.setType(NetType.NONE);
             baseNetworkStatus.setStatus(NetWorkStatus.NO_NETWORK);
             mNetworkStatus.postValue(baseNetworkStatus);
@@ -210,9 +212,7 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
             mNetworkStatus.postValue(baseNetworkStatus);
             load();
         }
-//        if (!(mNetworkStatus.getValue().getStatus() == NetWorkStatus.NO_NETWORK)) {
-//
-//        }
+
     }
 
 
@@ -277,24 +277,24 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
 
     protected abstract T getMemoryData();
 
-    @Network(netType = NetType.AUTO)
-    public void netWorkTypeWatch(NetType type) {
-        switch (type) {
-            case WIFI:
-                mNetType.postValue(NetType.WIFI);
-                break;
-            case CMNET:
-                mNetType.postValue(NetType.CMNET);
-                break;
-            case CMWAP:
-                mNetType.postValue(NetType.CMWAP);
-                break;
-            case NONE:
-                mNetType.postValue(NetType.NONE);
-                break;
-            default:
-                mNetType.postValue(NetType.AUTO);
-                break;
-        }
-    }
+//    @Network(netType = NetType.AUTO)
+//    public void netWorkTypeWatch(NetType type) {
+//        switch (type) {
+//            case WIFI:
+//                mNetType.postValue(NetType.WIFI);
+//                break;
+//            case CMNET:
+//                mNetType.postValue(NetType.CMNET);
+//                break;
+//            case CMWAP:
+//                mNetType.postValue(NetType.CMWAP);
+//                break;
+//            case NONE:
+//                mNetType.postValue(NetType.NONE);
+//                break;
+//            default:
+//                mNetType.postValue(NetType.AUTO);
+//                break;
+//        }
+//    }
 }
