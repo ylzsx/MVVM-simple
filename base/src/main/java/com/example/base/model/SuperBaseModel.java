@@ -5,6 +5,11 @@ import android.os.Looper;
 import android.util.Log;
 import com.example.base.model.bean.BaseCachedData;
 import com.example.base.model.bean.BaseNetworkStatus;
+import com.example.base.nettype.NetStateReceiver;
+import com.example.base.nettype.NetworkManager;
+import com.example.base.nettype.annotation.Network;
+import com.example.base.nettype.type.NetType;
+import com.example.base.nettype.utils.NetTypeUtil;
 import com.example.base.network.NetWorkStatus;
 
 import java.lang.reflect.Type;
@@ -31,12 +36,19 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     protected MutableLiveData<T> mModelLiveData;
     protected MutableLiveData<BaseNetworkStatus> mNetworkStatus;
 
+    protected MutableLiveData<NetType> mNetType;
+
+    protected NetTypeUtil.CurrentNetworkType mCurrentNetworkType;
+
     public SuperBaseModel() {
         // TODO：是否可以自动释放liveData
         mModelLiveData = new MutableLiveData<>();
         mNetworkStatus = new MutableLiveData<>();
         mNetworkStatus.setValue(new BaseNetworkStatus());
         mData = new BaseCachedData<T>();
+        mNetType = new MutableLiveData<>();
+        //注册网络监测
+        NetworkManager.getInstance().register(this);
     }
 
 
@@ -115,6 +127,8 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
         if (mCompositeDisposable != null && !mCompositeDisposable.isDisposed()) {
             mCompositeDisposable.dispose();
         }
+
+        NetworkManager.getInstance().unRegister(this);
     }
 
     /**
@@ -181,10 +195,24 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     // TODO: 流量 wifi通知到view时变 类似于观察者模式
     private void judgeStatusAndLoad() {
 //        mNetworkStatus.setValue(getNetStatus());
-
-        if (!(mNetworkStatus.getValue().getStatus() == NetWorkStatus.NO_NETWORK)) {
+        BaseNetworkStatus baseNetworkStatus = mNetworkStatus.getValue();
+//        if (mNetType.getValue() == NetType.NONE) {
+//            baseNetworkStatus.setType(NetType.NONE);
+//            baseNetworkStatus.setStatus(NetWorkStatus.NO_NETWORK);
+//            mNetworkStatus.postValue(baseNetworkStatus);
+//        }
+        if ((mCurrentNetworkType = NetTypeUtil.getNetworkType()) == NetTypeUtil.CurrentNetworkType.NETWORK_NO) {
+            baseNetworkStatus.setType(NetType.NONE);
+            baseNetworkStatus.setStatus(NetWorkStatus.NO_NETWORK);
+            mNetworkStatus.postValue(baseNetworkStatus);
+        } else {
+            baseNetworkStatus.setStatus(NetWorkStatus.INIT);
+            mNetworkStatus.postValue(baseNetworkStatus);
             load();
         }
+//        if (!(mNetworkStatus.getValue().getStatus() == NetWorkStatus.NO_NETWORK)) {
+//
+//        }
     }
 
 
@@ -248,4 +276,25 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
     protected abstract T getDataBaseData();
 
     protected abstract T getMemoryData();
+
+    @Network(netType = NetType.AUTO)
+    public void netWorkTypeWatch(NetType type) {
+        switch (type) {
+            case WIFI:
+                mNetType.postValue(NetType.WIFI);
+                break;
+            case CMNET:
+                mNetType.postValue(NetType.CMNET);
+                break;
+            case CMWAP:
+                mNetType.postValue(NetType.CMWAP);
+                break;
+            case NONE:
+                mNetType.postValue(NetType.NONE);
+                break;
+            default:
+                mNetType.postValue(NetType.AUTO);
+                break;
+        }
+    }
 }

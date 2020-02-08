@@ -9,7 +9,7 @@ android {
     buildToolsVersion BUILD_TOOLS_VERSION
 
     defaultConfig {
-        if(IS_DEBUG.toBoolean()) {
+        if (IS_DEBUG.toBoolean()) {
             applicationId "com.example.login"
         }
         minSdkVersion MIN_SDK_VERSION.toInteger()
@@ -38,7 +38,7 @@ android {
 
     sourceSets {
         main {
-            if(IS_DEBUG.toBoolean()) {
+            if (IS_DEBUG.toBoolean()) {
                 manifest.srcFile 'src/main/AndroidManifest.xml'
             } else {
                 manifest.srcFile 'src/main/manifest/AndroidManifest.xml'
@@ -51,6 +51,8 @@ android {
 dependencies {
     implementation deps.androidx.appcompat
 
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     testImplementation deps.debug.junit
     androidTestImplementation deps.debug.androidx_junit
     androidTestImplementation deps.debug.espresso
