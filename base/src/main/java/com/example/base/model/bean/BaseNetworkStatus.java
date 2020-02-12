@@ -1,5 +1,6 @@
 package com.example.base.model.bean;
 
+import com.example.base.network.NetType;
 import com.example.base.network.NetWorkStatus;
 
 /**
@@ -12,6 +13,7 @@ public class BaseNetworkStatus {
 
     NetWorkStatus status;
     String message;
+    NetType netType;
 
     public BaseNetworkStatus() {
         status = NetWorkStatus.INIT;
@@ -36,5 +38,13 @@ public class BaseNetworkStatus {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public NetType getNetType() {
+        return netType;
+    }
+
+    public void setNetType(NetType netType) {
+        this.netType = netType;
     }
 }

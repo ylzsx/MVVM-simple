@@ -6,7 +6,9 @@ import android.util.Log;
 
 import com.example.base.model.bean.BaseCachedData;
 import com.example.base.model.bean.BaseNetworkStatus;
+import com.example.base.network.NetType;
 import com.example.base.network.NetWorkStatus;
+import com.example.base.network.NetworkManager;
 
 import java.lang.reflect.Type;
 
@@ -177,16 +179,21 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
 
     }
 
-    // TODO: 流量 wifi通知到view时变 类似于观察者模式
     private void judgeStatusAndLoad() {
-//        mNetworkStatus.setValue(getNetStatus());
-        if (!(mNetworkStatus.getValue().getStatus() == NetWorkStatus.NO_NETWORK)) {
+        BaseNetworkStatus baseNetworkStatus = mNetworkStatus.getValue();
+
+        // 在每次发送网络请求时，检测网络状态
+        NetType netType = NetworkManager.getInstance().getNetTypeLiveData().getValue();
+        if (netType == NetType.NONE) {
+            baseNetworkStatus.setStatus(NetWorkStatus.NO_NETWORK);
+            baseNetworkStatus.setNetType(NetType.NONE);
+            mNetworkStatus.postValue(baseNetworkStatus);
+        } else {
+            baseNetworkStatus.setStatus(NetWorkStatus.INIT);
+            baseNetworkStatus.setNetType(netType);
+            mNetworkStatus.postValue(baseNetworkStatus);
             load();
         }
-    }
-
-    private BaseNetworkStatus getNetStatus() {
-        return null;
     }
 
     /**

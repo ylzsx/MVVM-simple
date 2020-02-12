@@ -1,6 +1,13 @@
 package com.example.base;
 
+import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Context;
+import android.os.Process;
+
+import com.example.base.network.NetworkManager;
+
+import java.util.List;
 
 /**
  * @author YangZhaoxin.
@@ -22,5 +29,32 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sApplication = this;
+        // 初始化网络检测器
+        NetworkManager.getInstance().init(this);
+    }
+
+    /**
+     * 获取进程名
+     * @param context
+     * @return
+     */
+    public static String getCurrentProcessName(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos = null;
+        if (activityManager != null) {
+            runningAppProcessInfos = activityManager.getRunningAppProcesses();
+        }
+        if (runningAppProcessInfos == null) {
+            return null;
+        }
+
+        for (ActivityManager.RunningAppProcessInfo processInfo : runningAppProcessInfos) {
+            if (processInfo.pid == Process.myPid()) {
+                if (processInfo.processName != null) {
+                    return processInfo.processName;
+                }
+            }
+        }
+        return null;
     }
 }

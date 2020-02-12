@@ -44,4 +44,6 @@ dependencies {
     api deps.project.framework.arouter
     api deps.project.framework.annotations
 
+    api deps.project.base.event
+
 }

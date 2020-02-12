@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import com.example.base.model.bean.BaseNetworkStatus;
 import com.example.base.model.SuperBaseModel;
+import com.example.base.network.NetType;
+import com.example.base.network.NetworkManager;
 import com.example.base.view.IBaseView;
 import com.example.base.viewmodel.IMvvmNetworkViewModel;
 
@@ -45,12 +47,33 @@ public abstract class MvvmNetworkActivity<V extends ViewDataBinding, VM extends 
                 observeNet(key, (BaseNetworkStatus) status);
             });
         }
+
+        // 检测网络状态
+        if (!(NetworkManager.getInstance().getNetTypeLiveData() == null)) {
+            NetworkManager.getInstance().getNetTypeLiveData().observe(this, netType -> {
+                onNetTypeChange(netType);
+            });
+        }
+    }
+
+    protected void onNetTypeChange(NetType netType) {
+        switch (netType) {
+            case NONE:
+                break;
+            case WIFI:
+                break;
+            case CMWAP:
+                break;
+            case CMNET:
+                break;
+            default:
+                break;
+        }
     }
 
     protected void observeNet(String key, BaseNetworkStatus status) {
         switch (status.getStatus()) {
             case LOADING:
-                // TODO: 不知道会不会有冲突
                 onNetLoading(key,  status);
                 break;
             case DONE:

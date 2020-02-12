@@ -39,6 +39,7 @@ def project = [
 
         // 基础层
         base    : [
+                event   : includeProject(":event"),
                 base    : includeProject(":base")
         ],
 
