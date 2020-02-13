@@ -3,9 +3,11 @@ package com.example.base.view.fragment;
 import android.os.Bundle;
 import android.view.View;
 
-import com.example.base.view.IBaseView;
-import com.example.base.model.bean.BaseNetworkStatus;
 import com.example.base.model.SuperBaseModel;
+import com.example.base.model.bean.BaseNetworkStatus;
+import com.example.base.network.NetType;
+import com.example.base.network.NetworkManager;
+import com.example.base.view.IBaseView;
 import com.example.base.viewmodel.IMvvmNetworkViewModel;
 
 import java.util.Iterator;
@@ -49,6 +51,13 @@ public abstract class MvvmNetworkFragment<V extends ViewDataBinding, VM extends 
                 observeNet(key, (BaseNetworkStatus) status);
             });
         }
+
+        // 检测网络状态
+        if (!(NetworkManager.getInstance().getNetTypeLiveData() == null)) {
+            NetworkManager.getInstance().getNetTypeLiveData().observe(this, netType -> {
+                onNetTypeChange(netType);
+            });
+        }
     }
 
     protected void observeNet(String key, BaseNetworkStatus status) {
@@ -69,6 +78,21 @@ public abstract class MvvmNetworkFragment<V extends ViewDataBinding, VM extends 
             case INIT:
             default:
                 onNetInit(key, status);
+                break;
+        }
+    }
+
+    protected void onNetTypeChange(NetType netType) {
+        switch (netType) {
+            case NONE:
+                break;
+            case WIFI:
+                break;
+            case CMWAP:
+                break;
+            case CMNET:
+                break;
+            default:
                 break;
         }
     }

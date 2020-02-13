@@ -39,6 +39,7 @@ dependencies {
     api deps.tools.loadsir
     //引入rxjava
     api deps.tools.rxjava
+    api deps.tools.rxAndroid
     api deps.tools.gson
 
     api deps.project.framework.arouter

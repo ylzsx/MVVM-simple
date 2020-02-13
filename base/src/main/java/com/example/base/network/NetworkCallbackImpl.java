@@ -27,7 +27,6 @@ public class NetworkCallbackImpl extends ConnectivityManager.NetworkCallback {
 
     public NetworkCallbackImpl() {
         mNetTypeLiveData = new MutableLiveData<>();
-//        mNetTypeLiveData.postValue(NetType.NONE);
     }
 
     @Override
@@ -40,7 +39,6 @@ public class NetworkCallbackImpl extends ConnectivityManager.NetworkCallback {
     public void onLost(@NonNull Network network) {
         super.onLost(network);
         Log.e(LOG_TAG, "network >>> 网络已中断");
-//        mNetTypeLiveData.postValue(NetType.NONE);
         LiveDataUtil.postValue(mNetTypeLiveData, NetType.NONE);
     }
 
@@ -50,11 +48,9 @@ public class NetworkCallbackImpl extends ConnectivityManager.NetworkCallback {
         if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
             if (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
                 Log.e(LOG_TAG, "network >>> 网络发生变更，类型为 WIFI");
-//                mNetTypeLiveData.postValue(NetType.WIFI);
                 LiveDataUtil.postValue(mNetTypeLiveData, NetType.WIFI);
             } else {
                 Log.e(LOG_TAG, "network >>> 网络发生变更，类型为 流量");
-//                mNetTypeLiveData.postValue(NetType.CMWAP);
                 LiveDataUtil.postValue(mNetTypeLiveData, NetType.CMWAP);
             }
         }

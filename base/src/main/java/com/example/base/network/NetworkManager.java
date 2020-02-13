@@ -48,11 +48,10 @@ public class NetworkManager {
         if (application != null) {
             mApplication = application;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ConnectivityManager.NetworkCallback networkCallback = new NetworkCallbackImpl();
                 NetworkRequest request = new NetworkRequest.Builder().build();
                 ConnectivityManager manager = (ConnectivityManager) mApplication.getSystemService(Context.CONNECTIVITY_SERVICE);
                 if (manager != null) {
-                    manager.registerNetworkCallback(request, networkCallback);
+                    manager.registerNetworkCallback(request, mNetworkCallback);
                 }
             }
         } else {
