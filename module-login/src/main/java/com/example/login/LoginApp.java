@@ -1,6 +1,7 @@
 package com.example.login;
 
 import com.example.base.BaseApplication;
+import com.example.network.HttpClient;
 
 /**
  * @author YangZhaoxin.
@@ -14,5 +15,6 @@ public class LoginApp extends BaseApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        HttpClient.getInstance().init(new NetworkRequestInfo());
     }
 }

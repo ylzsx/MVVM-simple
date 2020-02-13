@@ -1,4 +1,4 @@
-package com.example.login;
+package com.example.login.view;
 
 import android.util.Log;
 
@@ -7,7 +7,10 @@ import com.example.base.network.NetType;
 import com.example.base.utils.ToastUtil;
 import com.example.base.view.activity.MvvmNetworkActivity;
 import com.example.fw_annotations.BindPath;
+import com.example.login.viewmodel.LoginViewModel;
+import com.example.login.R;
 import com.example.login.databinding.ActivityLoginBinding;
+import com.example.login.model.LoginModel;
 
 import androidx.lifecycle.ViewModel;
 

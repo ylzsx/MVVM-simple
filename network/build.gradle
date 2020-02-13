@@ -30,11 +30,10 @@ android {
 }
 
 dependencies {
-    implementation deps.androidx.appcompat
-
     implementation deps.project.base.base
 
     api deps.tools.retrofit
     implementation deps.tools.logging_interceptor
     implementation deps.tools.converter_gson
+    implementation deps.tools.adapter_rxjava
 }

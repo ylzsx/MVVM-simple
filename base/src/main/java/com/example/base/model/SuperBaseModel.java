@@ -42,6 +42,9 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
         mData = new BaseCachedData<T>();
     }
 
+    public MutableLiveData<T> getModelLiveData() {
+        return mModelLiveData;
+    }
 
     @Override
     public MutableLiveData<BaseNetworkStatus> getNetworkStatus() {
@@ -85,10 +88,6 @@ public abstract class SuperBaseModel<T> implements ISuperBaseModel {
      */
     protected String getApkString() {
         return null;
-    }
-
-    public MutableLiveData<T> getModelLiveData() {
-        return mModelLiveData;
     }
 
     /**

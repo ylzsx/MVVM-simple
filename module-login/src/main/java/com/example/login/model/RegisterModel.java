@@ -1,4 +1,4 @@
-package com.example.login;
+package com.example.login.model;
 
 import com.example.base.model.BaseModel;
 

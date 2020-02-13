@@ -56,7 +56,7 @@ dependencies {
     androidTestImplementation deps.debug.espresso
 
     implementation deps.project.base.base
-
+    implementation deps.project.base.network
 
     annotationProcessor deps.project.framework.annotations_compiler
 }

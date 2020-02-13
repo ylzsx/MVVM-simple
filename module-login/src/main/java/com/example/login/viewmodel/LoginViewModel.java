@@ -1,6 +1,8 @@
-package com.example.login;
+package com.example.login.viewmodel;
 
 import com.example.base.viewmodel.MvvmNetworkViewModel;
+import com.example.login.model.LoginModel;
+import com.example.login.model.RegisterModel;
 
 import androidx.lifecycle.MutableLiveData;
 

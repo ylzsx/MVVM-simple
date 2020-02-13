@@ -24,7 +24,7 @@ public abstract class BaseModel<T> extends SuperBaseModel<T> {
                 @Override
                 public void run() {
                     mModelLiveData.postValue(data);
-                    mData.setData(data);
+//                    mData.setData(data);
                     BaseNetworkStatus status = mNetworkStatus.getValue();
                     if (status == null) {
                         status = new BaseNetworkStatus();
@@ -32,7 +32,7 @@ public abstract class BaseModel<T> extends SuperBaseModel<T> {
                     status.setStatus(NetWorkStatus.DONE);
                     mNetworkStatus.postValue(status);
                     // TODO: 缓存room
-                    saveData(data);
+//                    saveData(data);
                 }
             }, 0);
         }
